@@ -1,16 +1,28 @@
-import math
+"""
+Ce script verifie qu'une surface f est usinable en roulant.
+Pour cela on execute la fonction est_usinable(f)
+"""
+
 import matplotlib.pyplot as plt
 import numpy as np
 
+# Rayon de la fraise 
+rayon_fraise = 4e-3
 
+# Intervalles de valeurs des variables u et v
 intervalle_u=np.arange(-np.pi,np.pi,0.1)
 intervalle_v=np.arange(-np.pi,np.pi,0.1)
 
-rayon_fraise = 4e-3
-
+# Fonction f parametrant la surface à étudier
 def f(u: float,v: float) -> tuple:
     return v*np.cos(u),v*np.sin(u),v*np.cos(u)*np.sin(u)
 
+
+"""
+
+Fonctions de derivation
+
+"""
 
 def derivee1_v(f, h=0.001) -> list:
     '''
@@ -18,8 +30,7 @@ def derivee1_v(f, h=0.001) -> list:
     :param f: Fonction parametrant la surface
     :param h: Petite valeur pour le calcul de dérivée
     :return: Liste de matrice representant les dérivées dans les directions x, y, z
-    '''
-    
+    ''' 
 
     # Initialise les matrices pour stocker les dérivées dans les directions x, y, z
     derivees = [np.zeros((len(intervalle_u), len(intervalle_v))) for _ in range(3)]
@@ -46,24 +57,6 @@ def derivee1_u(f, h=0.001) -> list:
         for u in range(len(intervalle_u)):
             for v in range(len(intervalle_v)):
                 derivees[i,u,v]=(f(intervalle_u[u]+h,intervalle_v[v])[i]-f(intervalle_u[u],intervalle_v[v])[i])/h
-    return derivees
-
-
-def derivee1_v(f, h=0.001) -> list:
-    '''
-    Calcule la dérivée partielle de f par rapport à v en tout point
-    :param f: Fonction parametrant la surface
-    :param h: Petite valeur pour le calcul de dérivée
-    :return: Liste de matrice representant les dérivées dans les directions x, y, z
-    '''
-
-    # Initialise les matrices pour stocker les dérivées dans les directions x, y, z
-    derivees = [np.zeros((len(intervalle_u), len(intervalle_v))) for _ in range(3)]
-
-    for i in range(3):
-        for u in range(len(intervalle_u)):
-            for v in range(len(intervalle_v)):
-                derivees[i][u][v]=(f(intervalle_u[u],intervalle_v[v]+h)[i]-f(intervalle_u[u],intervalle_v[v])[i])/h
     return derivees
 
 
@@ -100,6 +93,11 @@ def derivee2_v(f, h=0.001) -> list:
                 derivees[i][u][v]= (f(intervalle_u[u],intervalle_v[v]+h)[i]-2*f(intervalle_u[u], intervalle_v[v])[i] + f(intervalle_u[u], intervalle_v[v]-h)[i])/h**2
     return derivees
 
+"""
+
+Fonctions de norme et produit vectoriel
+
+"""
 
 def norme(v: list) -> float:
     '''Renvoie la norme d'un vecteur v'''
@@ -120,28 +118,35 @@ def produit_vectoriel(a: list,b: list) -> list:
     return c
 
 
+"""
+
+Fonction de rayon de courbure
+
+"""
+
 def rayon_courbure(f) -> np.ndarray:
     '''
     Calcule le rayon de courbure de f dans la direction u
     :param f: Fonction parametrant la surface
     :return: Matrice du rayon de courbure en chaque point
     '''
+
     du = derivee1_u(f)
     d2u = derivee2_u(f)
-    rayon_courbure = np.zeros((len(intervalle_u), len(intervalle_v))) # la liste des rayons en tt points
+    rayon_courbure = np.zeros((len(intervalle_u), len(intervalle_v))) # la liste des rayons en tout points
     for i in range(len(intervalle_u)):
         for j in range(len(intervalle_v)):
+            # On calcule 1/R
             rayon = norme(produit_vectoriel(du[:, i, j], d2u[:, i, j])) / norme(du[:, i, j])**3
             
             # On evite de diviser par zero
             if rayon == 0.:
-                rayon_courbure[i][j] == float('inf')
+                rayon_courbure[i][j] == float('inf') # Si 1/R est nul R tend vers l'infini
             else:
                 rayon_courbure[i][j] = 1/rayon
     return rayon_courbure
 
-    
-    
+       
 
 def est_usinable(f) -> bool:
     '''
@@ -151,8 +156,11 @@ def est_usinable(f) -> bool:
     :param f: fonction parametrant la surface
     :Return: True si la surface est usinable
     '''
+
     d1=derivee1_v(f)
     l=derivee2_v(f)
+
+    # On verifie que les dérivés secondes par rapport à v sont nulles
     for i in range(0,3):
         for j in range(len(l[1])):
             for k in range(len(l[1])):
