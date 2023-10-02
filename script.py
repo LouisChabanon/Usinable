@@ -14,12 +14,10 @@ intervalle_u = np.arange(-np.pi, np.pi, 0.1)
 intervalle_v = np.arange(-np.pi, np.pi, 0.1)
 
 # Fonction f parametrant la surface à étudier
-'''def f(u: float,v: float) -> tuple:
-    return v*np.cos(u),v*np.sin(u),v*np.cos(u)*np.sin(u)'''
 
 
-def f(u, v):
-    return u, v, 0
+def f(u: float, v: float) -> tuple:
+    return v*np.cos(u), v*np.sin(u), v*np.cos(u)*np.sin(u)
 
 
 """
@@ -161,7 +159,6 @@ def rayon_courbure(f) -> np.ndarray:
             if abs(rayon) < 1e-10:
                 # Si 1/R est nul R tend vers l'infini
                 rayon_courbure[i][j] = float('inf')
-                print("here")
             else:
                 rayon_courbure[i][j] = 1/rayon
     return rayon_courbure
