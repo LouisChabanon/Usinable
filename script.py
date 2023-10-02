@@ -17,9 +17,14 @@ intervalle_v = np.arange(-np.pi, np.pi, 0.1)
 
 
 def f(u: float, v: float) -> tuple:
-    return v*np.cos(u), v*np.sin(u), v*np.cos(u)*np.sin(u)
+    return v*np.cos(u), v*np.sin(u), 2*np.cos(u)*np.sin(u)
 
+'''def f(u: float, v: float) -> tuple:
+    return 3*np.cos(u), 3*np.sin(u), v'''
 
+'''def f(u: float, v: float) -> tuple:
+    return np.cos(u)-v*np.sin(u), np.sin(u)+v*np.cos(u),v
+'''
 """
 
 Fonctions de derivation
@@ -148,7 +153,7 @@ def rayon_courbure(f) -> np.ndarray:
     du = derivee1_u(f)
     d2u = derivee2_u(f)
     # la liste des rayons en tout points
-    rayon_courbure = np.zeros((len(intervalle_u), len(intervalle_v)))
+    rayon_courbure = np.zeros((len(intervalle_u)-1, len(intervalle_v)-1))
     for i in range(len(intervalle_u)-1):
         for j in range(len(intervalle_v)-1):
             # On calcule 1/R
@@ -185,7 +190,7 @@ def est_usinable(f) -> bool:
                     return False
 
     # On cherche maintenant à verifier que le rayon de courbure est superieur à celui de la fraise
-    if np.any(rayon_courbure(f)) <= rayon_fraise:
+    if np.min(rayon_courbure(f)) <= rayon_fraise:
         print("Le rayon de courbure de la courbe est trop faible")
         return False
 
@@ -194,4 +199,4 @@ def est_usinable(f) -> bool:
 
 
 if __name__ == "__main__":
-    print(est_usinable(f))
+    est_usinable(f)
