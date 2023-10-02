@@ -36,12 +36,12 @@ def derivee1_v(f, h=0.001) -> list:
     '''
 
     # Initialise les matrices pour stocker les dérivées dans les directions x, y, z
-    derivees = [np.zeros((len(intervalle_u), len(intervalle_v)))
+    derivees = [np.zeros((len(intervalle_u)-1, len(intervalle_v)-1))
                 for _ in range(3)]
 
     for i in range(3):
-        for u in range(len(intervalle_u)):
-            for v in range(len(intervalle_v)):
+        for u in range(len(intervalle_u)-1):
+            for v in range(len(intervalle_v)-1):
                 derivees[i][u][v] = (
                     f(intervalle_u[u], intervalle_v[v]+h)[i]-f(intervalle_u[u], intervalle_v[v])[i])/h
     return derivees
@@ -57,11 +57,11 @@ def derivee1_u(f, h=0.001) -> list:
 
     # Initialise les matrices pour stocker les dérivées dans les directions x, y, z
     derivees = np.array(
-        [np.zeros((len(intervalle_u), len(intervalle_v))) for _ in range(3)])
+        [np.zeros((len(intervalle_u)-1, len(intervalle_v)-1)) for _ in range(3)])
 
     for i in range(3):
-        for u in range(len(intervalle_u)):
-            for v in range(len(intervalle_v)):
+        for u in range(len(intervalle_u)-1):
+            for v in range(len(intervalle_v)-1):
                 derivees[i, u, v] = (
                     f(intervalle_u[u]+h, intervalle_v[v])[i]-f(intervalle_u[u], intervalle_v[v])[i])/h
     return derivees
@@ -77,10 +77,10 @@ def derivee2_u(f, h=0.001) -> list:
 
     # Initialise les matrices pour stocker les dérivées secondes de f dans les direction x,y,z
     derivees = np.array(
-        [(np.zeros((len(intervalle_u), len(intervalle_v)))) for _ in range(3)])
+        [(np.zeros((len(intervalle_u)-1, len(intervalle_v)-1))) for _ in range(3)])
     for i in range(3):
-        for u in range(len(intervalle_u)-1):
-            for v in range(len(intervalle_v)-1):
+        for u in range(1,len(intervalle_u)-1):
+            for v in range(1,len(intervalle_v)-1):
                 derivees[i][u][v] = (f(intervalle_u[u]+h, intervalle_v[v])[i]-2*f(
                     intervalle_u[u], intervalle_v[v])[i] + f(intervalle_u[u]-h, intervalle_v[v])[i])/h**2
     return derivees
@@ -95,11 +95,11 @@ def derivee2_v(f, h=0.001) -> list:
     '''
 
     # Initialise les matrices pour stocker les dérivées secondes de f dans les direction x,y,z
-    derivees = [np.zeros((len(intervalle_u), len(intervalle_v)))
+    derivees = [np.zeros((len(intervalle_u)-1, len(intervalle_v)-1))
                 for _ in range(3)]
     for i in range(3):
-        for u in range(len(intervalle_u)-1):
-            for v in range(len(intervalle_v)-1):
+        for u in range(1,len(intervalle_u)-1):
+            for v in range(1,len(intervalle_v)-1):
                 derivees[i][u][v] = (f(intervalle_u[u], intervalle_v[v]+h)[i]-2*f(
                     intervalle_u[u], intervalle_v[v])[i] + f(intervalle_u[u], intervalle_v[v]-h)[i])/h**2
     return derivees
@@ -149,8 +149,8 @@ def rayon_courbure(f) -> np.ndarray:
     d2u = derivee2_u(f)
     # la liste des rayons en tout points
     rayon_courbure = np.zeros((len(intervalle_u), len(intervalle_v)))
-    for i in range(len(intervalle_u)):
-        for j in range(len(intervalle_v)):
+    for i in range(len(intervalle_u)-1):
+        for j in range(len(intervalle_v)-1):
             # On calcule 1/R
             rayon = norme(produit_vectoriel(
                 du[:, i, j], d2u[:, i, j])) / norme(du[:, i, j])**3
